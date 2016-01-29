@@ -1,0 +1,6 @@
+sources
+coverage
+coverage-browser
+README.md.mustache
+logs
+*.log
