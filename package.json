@@ -1,6 +1,6 @@
 {
   "name": "@alexistessier/ui-component",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "A class representing a dom UI component",
   "main": "index.js",
   "scripts": {

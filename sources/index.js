@@ -7,11 +7,14 @@ let UIComponent_unique_ID = 0;
 
 let eventListenerIdentifierCounter = 0;
 
-let defaultEventDelegationRoot = dom.selectOne('body');
+let defaultEventDelegationRootCache = null;
+let defaultEventDelegationRoot = function (cache) {
+	return cache || (cache = dom.selectOne('body'));
+};
 
 class UIComponent {
 	constructor({
-		eventDelegationRoot = defaultEventDelegationRoot,
+		eventDelegationRoot = defaultEventDelegationRoot(defaultEventDelegationRootCache),
 		cssClass = this.className
 	}={}) {
 		this.option = {
@@ -97,7 +100,7 @@ class UIComponent {
 				forEach(listenerList, (fn, listenerIdentifier)=>{
 					this.off(event, listenerIdentifier);
 				});
-				
+
 				delete this.eventListener[event];
 			}
 		}
