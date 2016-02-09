@@ -54,8 +54,8 @@ class UIComponent {
 	on(event, descendantName, callback, listenerIdentifier = ('_'+(eventListenerIdentifierCounter++))){
 		this.eventListener[event] = this.eventListener[event] || {};
 		let fn = null;
-		if (isFunction(descendant)) {
-			let callback = descendant;
+		if (isFunction(descendantName)) {
+			let callback = descendantName;
 			fn = this.eventDelegationService.bind(this.option.eventDelegationRoot, this.selector, event, (e)=>{
 				let target = UIComponent.retrieve(e.delegateTarget);
 				if (isObject(target) && target.componentId === this.componentId) {
@@ -86,7 +86,10 @@ class UIComponent {
 		if (listenerIdentifier) {
 			let listenerList = this.eventListener[event];
 			let fn = isObject(listenerList) ? listenerList[listenerIdentifier] : null;
-			if(fn){this.eventDelegationService.unbind(this.option.eventDelegationRoot, event, fn, false);}
+			if(fn){
+				this.eventDelegationService.unbind(this.option.eventDelegationRoot, event, fn, false);
+				delete this.eventListener[event][listenerIdentifier];
+			} 
 		}
 		else if(event){
 			let listenerList = this.eventListener[event];
@@ -94,6 +97,8 @@ class UIComponent {
 				forEach(listenerList, (fn, listenerIdentifier)=>{
 					this.off(event, listenerIdentifier);
 				});
+				
+				delete this.eventListener[event];
 			}
 		}
 		else{
