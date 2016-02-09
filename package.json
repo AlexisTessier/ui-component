@@ -1,6 +1,6 @@
 {
   "name": "@alexistessier/ui-component",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A class representing a dom UI component",
   "main": "index.js",
   "scripts": {
@@ -24,5 +24,10 @@
   "homepage": "https://github.com/AlexisTessier/ui-component#readme",
   "devDependencies": {
     "@alexistessier/gulp-workflow-common-task": "^2.1.0"
+  },
+  "dependencies": {
+    "@alexistessier/dom": "^1.0.1",
+    "component-delegate": "^0.2.3",
+    "lodash": "^4.3.0"
   }
 }
