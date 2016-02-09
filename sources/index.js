@@ -152,8 +152,10 @@ class UIComponent {
 
 	registerDescendant(name, one = true, key = null){
 		key = camelCase(key || name);
-		return this.linkDescendant(key,
-			this.descendant[key] = (one ? this.node.querySelector : this.node.querySelectorAll)(this.descendantSelector(name)));
+		let descendantSelector = this.descendantSelector(name);
+		let descendant = one ? this.node.querySelector(descendantSelector) : this.node.querySelectorAll(descendantSelector);
+		this.descendant[key] = descendant;
+		return this.linkDescendant(key, descendant);
 	}
 
 	registerDescendantList(name, key = null){
