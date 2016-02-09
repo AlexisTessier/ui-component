@@ -141,7 +141,7 @@ class UIComponent {
 				this[switchCallbackName](newValue);
 			}
 			if(isFunction(this[callbackName])) {
-				this[callbackName]();
+				this[callbackName](newValue);
 			}
 		}
 	}
