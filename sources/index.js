@@ -133,10 +133,15 @@ class UIComponent {
 		let currentValue = this.is(stateName);
 
 		if (newValue !== currentValue) {
-			let callbackName = camelCase(this.option.switchStateMethodPrefix+'-'+stateName+'-'+(newValue ? 'on' : 'off'));
+			let commonCallBackName = this.option.switchStateMethodPrefix+'-'+stateName+'-';
+			let callbackName = camelCase(commonCallBackName+(newValue ? 'on' : 'off'));
+			let switchCallbackName = camelCase(commonCallBackName+'switch');
 			dom[newValue ? 'addClass' : 'removeClass'](this.node, stateName);
+			if(isFunction(this[switchCallbackName])) {
+				this[switchCallbackName](newValue);
+			}
 			if(isFunction(this[callbackName])) {
-				this[callbackName](newValue);
+				this[callbackName]();
 			}
 		}
 	}
