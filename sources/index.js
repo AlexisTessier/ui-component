@@ -14,10 +14,12 @@ let defaultEventDelegationRoot = function (cache) {
 
 class UIComponent {
 	constructor({
+		switchStateMethodPrefix = 'state',
 		eventDelegationRoot = defaultEventDelegationRoot(defaultEventDelegationRootCache),
 		cssClass = this.className
 	}={}) {
 		this.option = {
+			switchStateMethodPrefix,
 			eventDelegationRoot,
 			cssClass
 		};
@@ -123,16 +125,24 @@ class UIComponent {
 		}
 	}
 
-	is(className){
-		return dom.hasClass(this.node, className);
+	is(stateName){
+		return dom.hasClass(this.node, stateName);
 	}
 
-	state(className, value){
-		dom[value ? 'addClass' : 'removeClass'](this.node, className);
+	state(stateName, newValue){
+		let currentValue = this.is(stateName);
+
+		if (newValue !== currentValue) {
+			let callbackName = camelCase(this.option.switchStateMethodPrefix+'-'+stateName+'-'+(newValue ? 'on' : 'off'));
+			dom[newValue ? 'addClass' : 'removeClass'](this.node, stateName);
+			if(isFunction(this[callbackName])) {
+				this[callbackName](newValue);
+			}
+		}
 	}
 
-	toggleState(className){
-		dom.toggleClass(this.node, className);
+	toggleState(stateName){
+		this.state(stateName, !this.is(stateName));
 	}
 
 	get selector(){
