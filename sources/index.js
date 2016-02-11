@@ -1,6 +1,6 @@
 import dom from '@alexistessier/dom'
 import delegate from 'component-delegate'
-import {isNumber, isObject, kebabCase, camelCase, isFunction, forEach} from 'lodash'
+import {isNull, isNumber, isObject, kebabCase, camelCase, isFunction, forEach} from 'lodash'
 
 let UIComponent_Node_Map = new WeakMap();
 let UIComponent_unique_ID = 0;
@@ -51,12 +51,15 @@ class UIComponent {
 		if (isFunction(callback)) {
 			callback(event);
 		}
-		else{
+		else if (isFunction(this[callback])) {
 			this[callback](event);
 		}
 	}
 
-	on(event, descendantName, callback, listenerIdentifier = ('_'+(eventListenerIdentifierCounter++))){
+	on(event, descendantName, callback = null, listenerIdentifier = ('_'+(eventListenerIdentifierCounter++))){
+		if (isNull(callback)) {
+			callback = camelCase(descendantName+'-'+event);
+		}
 		this.eventListener[event] = this.eventListener[event] || {};
 		let fn = null;
 		if (isFunction(descendantName)) {
