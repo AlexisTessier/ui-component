@@ -74,6 +74,8 @@ class UIComponent {
 
 	updateView(){
 		this.node.outerHTML = this.render();
+
+		return this.node;
 	}
 
 	renderView(){
@@ -81,6 +83,8 @@ class UIComponent {
 			this.node = dom.createDiv();
 			this.updateView();
 		}
+
+		return this.node;
 	}
 
 	appendView(parent){
