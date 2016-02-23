@@ -73,7 +73,13 @@ class UIComponent {
 	}
 
 	updateView(){
-		this.node.outerHTML = this.render();
+		if (this.node.parent) {
+			this.node.outerHTML = this.render();
+		}
+		else{
+			this.appendView(dom.createDiv());
+			return this.updateView();
+		}
 
 		return this.node;
 	}
