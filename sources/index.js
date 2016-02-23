@@ -69,7 +69,7 @@ class UIComponent {
 		if (isFunction(render)) {
 			return render(this.model);
 		}
-		return this.node.outerHTML;
+		return this.node ? this.node.outerHTML : '';
 	}
 
 	updateView(){
