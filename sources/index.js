@@ -44,13 +44,10 @@ class UIComponent {
 		this.data = {};
 		this.eventListener = {};
 		this.model = model;
+		
+		this.componentId = UIComponent_unique_ID++;
 
 		this.renderView();
-
-		this.componentId = UIComponent_unique_ID++;
-		dom.setData(this.node, 'ui-component-id', this.componentId);
-
-		UIComponent_Node_Map.set(this.node, this);
 
 		return this;
 	}
@@ -69,15 +66,7 @@ class UIComponent {
 		if (isFunction(render)) {
 			return render(this.model);
 		}
-		return this.node ? this.node.outerHTML : '';
-	}
-
-	updateView(){
-		if (this.node.parent) {
-			this.node.outerHTML = this.render();
-		}
-
-		return this.node;
+		return this.node ? this.node.outerHTML : '<div class="'+this.className+'"></div>';
 	}
 
 	renderView(){
@@ -87,6 +76,10 @@ class UIComponent {
 			this.node = rootNode.firstChild;
 		}
 		
+		if(this.node){
+			dom.setData(this.node, 'ui-component-id', this.componentId);
+			UIComponent_Node_Map.set(this.node, this);
+		}
 
 		return this.node;
 	}
