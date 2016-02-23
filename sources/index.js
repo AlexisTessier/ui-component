@@ -45,12 +45,12 @@ class UIComponent {
 		this.eventListener = {};
 		this.model = model;
 
+		this.renderView();
+
 		this.componentId = UIComponent_unique_ID++;
 		dom.setData(this.node, 'ui-component-id', this.componentId);
 
 		UIComponent_Node_Map.set(this.node, this);
-
-		this.renderView();
 
 		return this;
 	}
