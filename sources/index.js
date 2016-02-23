@@ -1,6 +1,6 @@
 import dom from '@alexistessier/dom'
 import delegate from 'component-delegate'
-import {isNull, isNumber, isObject, kebabCase, camelCase, isFunction, forEach} from 'lodash'
+import {isString, isNull, isNumber, isObject, kebabCase, camelCase, isFunction, forEach} from 'lodash'
 
 let UIComponent_Node_Map = new WeakMap();
 let UIComponent_unique_ID = 0;
@@ -16,13 +16,18 @@ class UIComponent {
 	constructor({
 		switchStateMethodPrefix = 'state',
 		eventDelegationRoot = defaultEventDelegationRoot(defaultEventDelegationRootCache),
-		cssClass = this.className
+		cssClass = this.className,
+		renderMethod = this.renderingMethod
 	}={}) {
 		this.option = {
 			switchStateMethodPrefix,
 			eventDelegationRoot,
-			cssClass
+			cssClass,
+			renderMethod
 		};
+
+		this.cssClass = cssClass;
+		this.renderMethod = renderMethod;
 	}
 
 	inject({
@@ -33,16 +38,19 @@ class UIComponent {
 		return this;
 	}
 
-	init(node){
+	init(node, model = {}){
 		this.node = node;
 		this.descendant = {};
 		this.data = {};
 		this.eventListener = {};
+		this.model = model;
 
 		this.componentId = UIComponent_unique_ID++;
 		dom.setData(this.node, 'ui-component-id', this.componentId);
 
 		UIComponent_Node_Map.set(this.node, this);
+
+		this.renderView();
 
 		return this;
 	}
@@ -56,14 +64,46 @@ class UIComponent {
 		}
 	}
 
-	on(event, descendantName, callback = null, listenerIdentifier = ('_'+(eventListenerIdentifierCounter++))){
+	render(){
+		let render = this.renderingMethod;
+		if (isFunction(render)) {
+			return render(this.model);
+		}
+		return this.node.outerHTML;
+	}
+
+	updateView(){
+		this.node.outerHTML = this.render();
+	}
+
+	renderView(){
+		if (!this.node) {
+			this.node = dom.createDiv();
+			this.updateView();
+		}
+	}
+
+	appendView(parent){
+		dom.appendChild(parent, this.node);
+	}
+
+	prependView(parent){
+		dom.prependChild(parent, this.node);
+	}
+
+	removeView(){
+		dom.remove(this.node);
+	}
+
+	on(event, descendantName = null, callback = null, listenerIdentifier = ('_'+(eventListenerIdentifierCounter++))){
 		if (isNull(callback)) {
 			callback = camelCase(descendantName+'-'+event);
 		}
 		this.eventListener[event] = this.eventListener[event] || {};
 		let fn = null;
-		if (isFunction(descendantName)) {
-			let callback = descendantName;
+		let descendantIsNull = isNull(descendantName);
+		if (descendantIsNull || isFunction(descendantName)) {
+			let callback = descendantIsNull ? event : descendantName;
 			fn = this.eventDelegationService.bind(this.option.eventDelegationRoot, this.selector, event, (e)=>{
 				let target = UIComponent.retrieve(e.delegateTarget);
 				if (isObject(target) && target.componentId === this.componentId) {
@@ -196,23 +236,31 @@ class UIComponent {
 		return this.node.setAttribute(name, value);
 	}
 
-	getStyle(){
+	get style(){
 		return dom.getStyle(this.node);
 	}
 
-	getWidth(){
+	set style(style){
+		this.setAttribute('style', style);
+	}
+
+	get width(){
 		return dom.getWidth(this.node);
 	}
 
-	getHeight(){
+	get height(){
 		return dom.getHeight(this.node);
 	}
 
 	get className(){
-		return this.cssClass || this.constructor.name || (this.node ? this.node.className.split(' ')[0] : (function () {
-			throw new Error('Impossible to retrieve the css component class name. You must use the cssClass option.');
+		return this.cssClass || this.constructor.cssClass || this.constructor.name || (this.node ? this.node.className.split(' ')[0] : (function () {
+			throw new Error('Impossible to retrieve the css component class name. You must use the cssClass option or set en cssClass key on the constructor.');
 			return null;
 		})());
+	}
+
+	get renderingMethod(){
+		return this.renderMethod || this.constructor.renderMethod || null;
 	}
 }
 
