@@ -104,13 +104,16 @@ class UIComponent {
 		let fn = null;
 		let descendantIsNull = isNull(descendantName);
 		if (descendantIsNull || isFunction(descendantName)) {
+
 			let callback = descendantIsNull ? event : descendantName;
+
 			fn = this.eventDelegationService.bind(this.option.eventDelegationRoot, this.selector, event, (e)=>{
 				let target = UIComponent.retrieve(e.delegateTarget);
 				if (isObject(target) && target.componentId === this.componentId) {
 					this.eventCallback(callback, e);
 				}
 			}, false);
+
 		}
 		else{
 			fn = this.eventDelegationService.bind(this.option.eventDelegationRoot, this.descendantSelector(descendantName), event, (e)=>{
