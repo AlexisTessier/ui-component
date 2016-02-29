@@ -52,12 +52,12 @@ class UIComponent {
 		return this;
 	}
 
-	eventCallback(callback, event){
+	eventCallback(callback, event, target){
 		if (isFunction(callback)) {
-			callback(event);
+			callback(event, target);
 		}
 		else if (isFunction(this[callback])) {
-			this[callback](event);
+			this[callback](event, target);
 		}
 	}
 
@@ -110,7 +110,7 @@ class UIComponent {
 			fn = this.eventDelegationService.bind(this.option.eventDelegationRoot, this.selector, event, (e)=>{
 				let target = UIComponent.retrieve(e.delegateTarget);
 				if (isObject(target) && target.componentId === this.componentId) {
-					this.eventCallback(callback, e);
+					this.eventCallback(callback, e, target);
 				}
 			}, false);
 
@@ -122,7 +122,7 @@ class UIComponent {
 					&& dom.getData(target, 'ui-parent-component-id') == this.componentId
 					&& dom.getData(target, 'ui-descendant-name') == kebabCase(descendantName)
 				) {
-					this.eventCallback(callback, e);
+					this.eventCallback(callback, e, target);
 				}
 			}, false);
 		}
