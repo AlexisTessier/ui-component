@@ -226,7 +226,7 @@ class UIComponent {
 		let descendant = one ? this.node.querySelector(descendantSelector) : this.node.querySelectorAll(descendantSelector);
 		this.descendant[key] = descendant;
 
-		if (one) {
+		if (!one) {
 			let descendantList = [];
 			forEach(descendant, el =>{
 				descendantList.push(this.linkDescendant(key, el));
