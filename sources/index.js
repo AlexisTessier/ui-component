@@ -227,11 +227,10 @@ class UIComponent {
 		this.descendant[key] = descendant;
 
 		if (!one) {
-			let descendantList = [];
 			forEach(descendant, el =>{
-				descendantList.push(this.linkDescendant(key, el));
+				this.linkDescendant(key, el);
 			});
-			return descendantList;
+			return descendant;
 		}
 		else{
 			return this.linkDescendant(key, descendant);
