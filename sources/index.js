@@ -104,7 +104,6 @@ class UIComponent {
 		let fn = null;
 		let descendantIsNull = isNull(descendantName);
 		if (descendantIsNull || isFunction(descendantName)) {
-
 			let callback = descendantIsNull ? event : descendantName;
 
 			fn = this.eventDelegationService.bind(this.option.eventDelegationRoot, this.selector, event, (e)=>{
@@ -116,11 +115,16 @@ class UIComponent {
 
 		}
 		else{
-			fn = this.eventDelegationService.bind(this.option.eventDelegationRoot, this.descendantSelector(descendantName), event, (e)=>{
+			let descendantKey = camelCase(descendantName);
+			let targetIsRegistered = !!(this.descendant[descendantKey]);
+
+			fn = this.eventDelegationService.bind(
+				(targetIsRegistered ? this.node : this.option.eventDelegationRoot),
+				this.descendantSelector(descendantName), event, (e)=>{
 				let target = e.delegateTarget;
-				if (isObject(target)
+				if (!targetIsRegistered || (isObject(target)
 					&& dom.getData(target, 'ui-parent-component-id') == this.componentId
-					&& dom.getData(target, 'ui-descendant-name') == kebabCase(descendantName)
+					&& dom.getData(target, 'ui-descendant-name') == kebabCase(descendantName))
 				) {
 					this.eventCallback(callback, e, target);
 				}
