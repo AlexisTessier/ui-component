@@ -226,8 +226,8 @@ class UIComponent {
 
 	registerDescendant(name, one = true, key = null){
 		key = camelCase(key || name);
-		let descendantSelector = this.descendantSelector(name);
-		let descendant = one ? this.node.querySelector(descendantSelector) : this.node.querySelectorAll(descendantSelector);
+		
+		let descendant = this.selectDescendant(name);
 		this.descendant[key] = descendant;
 
 		if (!one) {
@@ -239,6 +239,15 @@ class UIComponent {
 		else{
 			return this.linkDescendant(key, descendant);
 		}
+	}
+
+	selectDescendant(name, one = true){
+		let descendantSelector = this.descendantSelector(name);
+		return one ? this.node.querySelector(descendantSelector) : this.node.querySelectorAll(descendantSelector);
+	}
+
+	selectDescendantList(name){
+		return this.selectDescendant(name, false);
 	}
 
 	registerDescendantList(name, key = null){
