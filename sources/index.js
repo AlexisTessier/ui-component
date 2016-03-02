@@ -97,7 +97,17 @@ class UIComponent {
 		dom.remove(this.node);
 	}
 
+	remove(){
+		this.removeView();
+		UIComponent.domMap.has(this.node) ? UIComponent.domMap.delete(this.node) : null;
+		this.off();
+		this.descendant = {};
+
+		return null;
+	}
+
 	on(event, descendantName = null, callback = null, listenerIdentifier = ('_'+(eventListenerIdentifierCounter++))){
+		let eventRoot = this.option.eventDelegationRoot;
 		if (isNull(callback)) {
 			callback = camelCase(descendantName+'-'+event);
 		}
@@ -107,7 +117,7 @@ class UIComponent {
 		if (descendantIsNull || isFunction(descendantName)) {
 			let callback = descendantIsNull ? event : descendantName;
 
-			fn = this.eventDelegationService.bind(this.option.eventDelegationRoot, this.selector, event, (e)=>{
+			fn = this.eventDelegationService.bind(eventRoot, this.selector, event, (e)=>{
 				let target = UIComponent.retrieve(e.delegateTarget);
 				if (isObject(target) && target.componentId === this.componentId) {
 					this.eventCallback(callback, e, target);
@@ -118,10 +128,8 @@ class UIComponent {
 		else{
 			let descendantKey = camelCase(descendantName);
 			let targetIsRegistered = !!(this.descendant[descendantKey]);
-
-			fn = this.eventDelegationService.bind(
-				(targetIsRegistered ? this.node : this.option.eventDelegationRoot),
-				this.descendantSelector(descendantName), event, (e)=>{
+			if (!targetIsRegistered){ eventRoot = this.node; }
+			fn = this.eventDelegationService.bind(eventRoot, this.descendantSelector(descendantName), event, (e)=>{
 				let target = e.delegateTarget;
 				if (!targetIsRegistered || (isObject(target)
 					&& dom.getData(target, 'ui-parent-component-id') == this.componentId
@@ -133,7 +141,10 @@ class UIComponent {
 		}
 
 		if (fn) {
-			this.eventListener[event][listenerIdentifier] = fn;
+			this.eventListener[event][listenerIdentifier] = {
+				fn,
+				eventRoot
+			};
 		}
 
 		return fn;
@@ -143,8 +154,9 @@ class UIComponent {
 		if (listenerIdentifier) {
 			let listenerList = this.eventListener[event];
 			let fn = isObject(listenerList) ? listenerList[listenerIdentifier] : null;
+
 			if(fn){
-				this.eventDelegationService.unbind(this.option.eventDelegationRoot, event, fn, false);
+				this.eventDelegationService.unbind(fn.eventRoot, event, fn.fn, false);
 				delete this.eventListener[event][listenerIdentifier];
 			} 
 		}
