@@ -28,6 +28,11 @@ class UIComponent {
 
 		this.cssClass = cssClass;
 		this.renderMethod = renderMethod;
+
+		this.descendant = {};
+		this.data = {};
+		this.eventListener = {};
+		this.componentId = UIComponent_unique_ID++;
 	}
 
 	inject({
@@ -40,12 +45,8 @@ class UIComponent {
 
 	init(node, model = {}){
 		this.node = node;
-		this.descendant = {};
-		this.data = {};
-		this.eventListener = {};
-		this.model = model;
 		
-		this.componentId = UIComponent_unique_ID++;
+		this.model = model;
 
 		this.renderView();
 
@@ -242,12 +243,19 @@ class UIComponent {
 	}
 
 	selectDescendant(name, one = true){
-		let descendantSelector = this.descendantSelector(name);
-		return one ? this.node.querySelector(descendantSelector) : this.node.querySelectorAll(descendantSelector);
+		return this.select(this.descendantSelector(name), one);
 	}
 
 	selectDescendantList(name){
 		return this.selectDescendant(name, false);
+	}
+
+	select(selector, one = true){
+		return one ? this.node.querySelector(selector) : this.node.querySelectorAll(selector);
+	}
+
+	selectList(selector){
+		return this.select(selector, false);
 	}
 
 	registerDescendantList(name, key = null){
