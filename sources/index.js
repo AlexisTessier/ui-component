@@ -228,7 +228,7 @@ class UIComponent {
 	registerDescendant(name, one = true, key = null){
 		key = camelCase(key || name);
 		
-		let descendant = this.selectDescendant(name);
+		let descendant = this.selectDescendant(name, one);
 		this.descendant[key] = descendant;
 
 		if (!one) {
