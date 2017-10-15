@@ -1,12 +1,10 @@
 {
   "name": "@alexistessier/ui-component",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "description": "A class representing a dom UI component",
   "main": "index.js",
   "scripts": {
-    "test": "dependency-check package.json",
-    "build": "gulp",
-    "prepublish": "npm run build & npm test"
+    "test": "dependency-check package.json"
   },
   "repository": {
     "type": "git",
@@ -28,6 +26,7 @@
   "dependencies": {
     "@alexistessier/dom": "^2.1.2",
     "component-delegate": "^0.2.3",
+    "documentation": "5.3.3",
     "lodash": "^4.5.1"
   }
 }
